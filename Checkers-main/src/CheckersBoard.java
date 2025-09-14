@@ -7,6 +7,7 @@ public class CheckersBoard {
         JFrame frame = new JFrame("Checkers Game");
         frame.setSize(615, 635);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
 
         Board gameBoard = new Board();  
         frame.add(gameBoard);
