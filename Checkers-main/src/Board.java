@@ -266,35 +266,11 @@ private void initializePieces() {
 
         for (int i = 1; i < Math.abs(newX-oldX); i++) {
             Piece capturedPiece = boardArray[oldY+jumpY*i][oldX+jumpX*i];
-            //printArray(boardArray);
             if (capturedPiece != null && capturedPiece.getColor() != piece.getColor()) {
                 return new Point(oldX+jumpX*i, oldY+jumpY*i);
             }
         }
-
-        // int deltaX = newX - oldX;
-        // int deltaY = newY - oldY;
-
-        // if (Math.abs(deltaX) >= 2 && Math.abs(deltaY) >= 2) {
-        //     int captureX = oldX + deltaX / 2;
-        //     int captureY = oldY + deltaY / 2;
-
-        //     Piece capturedPiece = boardArray[captureY][captureX];
-        //     if (capturedPiece != null && capturedPiece.getColor() != piece.getColor()) {
-        //         return new Point(captureX, captureY);
-        //     }
-        // }
         return null;
-    }
-
-    private void printArray(Piece[][] boardArray) {
-        for (int i = 0; i < boardArray.length; i++) {
-            for (int j = 0; j < boardArray[i].length; j++) {
-                if (boardArray[i][j] == null) {continue;}
-                System.out.println(boardArray[i][j].getColor() + " " + j + " " + i);
-            }
-            System.out.println();
-        }
     }
 
     private void handleCapture(Piece movedPiece, Point newPosition, Piece[][] boardArray) {
@@ -347,35 +323,12 @@ private void initializePieces() {
 
     private List<Point> getCaptureMoves(Piece piece, Piece[][] boardArray) {
         List<Point> captureMoves = new ArrayList<>();
+        List<Point> possibleMoves = piece.getCapturePossibleMoves(boardArray);
 
-        
-        
-        int[] dx = {-2, 2, -2, 2};  // Two square diagonal jumps
-        int[] dy = {-2, -2, 2, 2};  
-        
-        int oldX = piece.getPosition().x / GRID_SIZE;
-        int oldY = piece.getPosition().y / GRID_SIZE;
-        
-        for (int i = 0; i < dx.length; i++) {
-            int newX = oldX + dx[i];
-            int newY = oldY + dy[i];
-            
-            // Mid-point coordinates (opponent's piece position)
-            int midX = oldX + dx[i] / 2;
-            int midY = oldY + dy[i] / 2;
-            
-            // Check that both the new position and the mid-point (opponent's piece) are within board bounds (0-7)
-            if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8 && midX >= 0 && midY < 8 && midX >= 0 && midY < 8) {
-                Piece opponentPiece = boardArray[midY][midX];
-                Piece landingSpot = boardArray[newY][newX];
-    
-                // Capture is possible if:
-                // 1. The mid-point (opponent's piece) is not null and is an opponent's piece.
-                // 2. The landing spot (new position) is empty.
-                if (opponentPiece != null && opponentPiece.getColor() != piece.getColor() && landingSpot == null) {
-                    Point newPosition = new Point(newX * GRID_SIZE + GRID_SIZE / 2, newY * GRID_SIZE + GRID_SIZE / 2);
-                    captureMoves.add(newPosition);
-                }
+        // Checks what possible move is a capture move
+        for (Point move : possibleMoves) {
+            if (calculateCapturePosition(piece, move, boardArray) != null) {
+                captureMoves.add(move);
             }
         }
         

@@ -9,7 +9,7 @@ public class CheckersBoard {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
-        Board gameBoard = new Board();  
+        Board gameBoard = new Board();
         frame.add(gameBoard);
 
         frame.setVisible(true);

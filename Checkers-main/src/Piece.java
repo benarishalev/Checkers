@@ -74,6 +74,20 @@ public class Piece {
         return point.distance(position) <= diameter / 2;
     }
 
+    public List<Point> getCapturePossibleMoves(Piece[][] board) {
+        List<Point> captureMoves = new ArrayList<>();
+        int x = position.x;
+        int y = position.y;
+
+        if (isKing) {
+            addAllDirectionalMoves(captureMoves, board, x, y);
+        } else {
+            addDiagonalCaptureMoves(captureMoves, board, x, y);
+        }
+
+        return captureMoves;
+    }
+
     public List<Point> getPossibleMoves(Piece[][] board) {
         List<Point> possibleMoves = new ArrayList<>();
         int x = position.x;
@@ -86,6 +100,23 @@ public class Piece {
         }
 
         return possibleMoves;
+    }
+
+    protected void addDiagonalCaptureMoves(List<Point> possibleMoves, Piece[][] board, int x, int y) {
+        if (color == Color.WHITE) {
+            // White pieces move "down" the board
+            addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE, y + GRID_SIZE)); // Left diagonal down
+            addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE, y + GRID_SIZE)); // Right diagonal down
+            addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE*2, y + GRID_SIZE*2)); // Left diagonal down 2
+            addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE*2, y + GRID_SIZE*2)); // Right diagonal down 2
+
+        } else if (color == Color.BLACK) {
+            // Black pieces move "up" the board
+            addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE, y - GRID_SIZE)); // Left diagonal up
+            addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE, y - GRID_SIZE)); // Right diagonal up
+            addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE*2, y - GRID_SIZE*2)); // Left diagonal up 2
+            addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE*2, y - GRID_SIZE*2)); // Right diagonal up 2
+        }
     }
 
     protected void addDiagonalMoves(List<Point> possibleMoves, Piece[][] board, int x, int y) {
