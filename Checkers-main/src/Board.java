@@ -9,27 +9,34 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Board extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final int DIAMETER = 30;
     private static final int GRID_SIZE = 75; // Size of each square on the board
     private static final int BOARD_SIZE = 600; // Board width and height
-   
 
     private Piece[] whitePieces;
     private Piece[] blackPieces;
     private Piece selectedPiece = null; // Track the selected piece
     private List<Point> possibleMoves = new ArrayList<>(); // Track possible moves
-    private List<Point> possibleCaptureMoves = new ArrayList<>(); // Track possible Capture moves
 
     private Game game; // Declare the Game object
     private boolean gameOver = false; // Add a flag to track game state
+
+    private Timer timer;
 
     public Board() {
         setLayout(null);
         initializePieces();
         game = new Game(); // Initialize the Game object
+
+
+        timer = new Timer(16, e -> repaint());
+        timer.start();
+
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -39,7 +46,7 @@ public class Board extends JPanel {
                     if (clickedPiece != null) {
                         System.out.println("Piece selected: " + clickedPiece.getClass().getSimpleName());
 
-                        if (clickedPiece.getColor() == game.getCurrentTurnColor()) {
+                        if (clickedPiece.getType() == game.getCurrentTurnColor()) {
                             selectedPiece = clickedPiece;
                         
                             Piece[][] boardArray = createBoardArray();
@@ -85,15 +92,14 @@ public class Board extends JPanel {
         // Draw possible move highlights
         g.setColor(Color.RED);
         for (Point move : possibleMoves) {
-            g.drawOval(move.x - DIAMETER / 2, move.y - DIAMETER / 2, DIAMETER, DIAMETER);
+            g.fillOval(move.x - DIAMETER / 2, move.y - DIAMETER / 2, DIAMETER, DIAMETER);
         }
     }
 
     private void drawBoard(Graphics g) {
-        Color darkGray = new Color(50, 50, 50); // Dark gray color for the board
         for (int i = 0; i < BOARD_SIZE / GRID_SIZE; i++) {
             for (int m = 0; m < BOARD_SIZE / GRID_SIZE; m++) {
-                g.setColor((i + m) % 2 != 0 ? darkGray : Color.WHITE);
+                g.setColor((i + m) % 2 != 0 ? Color.BLACK : Color.WHITE);
                 g.fillRect(i * GRID_SIZE, m * GRID_SIZE, GRID_SIZE, GRID_SIZE);
             }
         }
@@ -239,7 +245,7 @@ private void initializePieces() {
     
 
     private void promotePieceIfNecessary(Piece piece, int gridY) {
-        if (piece.getColor() == Color.WHITE && gridY == 7 || piece.getColor() == Color.BLACK && gridY == 0) {
+        if (piece.getType() == "white" && gridY == 7 || piece.getType() == "black" && gridY == 0) {
             piece.makeKing();
         }
     }
@@ -259,7 +265,7 @@ private void initializePieces() {
 
         for (int i = 1; i < Math.abs(newX-oldX); i++) {
             Piece capturedPiece = boardArray[oldY+jumpY*i][oldX+jumpX*i];
-            if (capturedPiece != null && capturedPiece.getColor() != piece.getColor()) {
+            if (capturedPiece != null && capturedPiece.getType() != piece.getType()) {
                 return new Point(oldX+jumpX*i, oldY+jumpY*i);
             }
         }
@@ -294,9 +300,9 @@ private void initializePieces() {
     
 
     private void removePieceFromBoard(Piece piece) {
-        if (piece.getColor() == Color.WHITE) {
+        if (piece.getType() == "white") {
             whitePieces = removePieceFromArray(whitePieces, piece);
-        } else if (piece.getColor() == Color.BLACK) {
+        } else if (piece.getType() == "black") {
             blackPieces = removePieceFromArray(blackPieces, piece);
         }
     
@@ -369,13 +375,13 @@ private void initializePieces() {
     private void checkForWinner() {
         Piece[][] boardArray = createBoardArray();
         if (noPiecesLeft(whitePieces)) {
-            showWinnerDialog(Color.BLACK);
+            showWinnerDialog("black");
         } else if (noPiecesLeft(blackPieces)) {
-            showWinnerDialog(Color.WHITE);
-        } else if (Arrays.stream(whitePieces).noneMatch(piece -> !piece.isCaptured() && !noValidMovesLeft(piece, boardArray)) && game.getCurrentTurnColor() == Color.WHITE) {
-            showWinnerDialog(Color.BLACK);
-        } else if (Arrays.stream(blackPieces).noneMatch(piece -> !piece.isCaptured() && !noValidMovesLeft(piece, boardArray)) && game.getCurrentTurnColor() == Color.BLACK) {
-            showWinnerDialog(Color.WHITE);
+            showWinnerDialog("white");
+        } else if (Arrays.stream(whitePieces).noneMatch(piece -> !piece.isCaptured() && !noValidMovesLeft(piece, boardArray)) && game.getCurrentTurnColor() == "white") {
+            showWinnerDialog("black");
+        } else if (Arrays.stream(blackPieces).noneMatch(piece -> !piece.isCaptured() && !noValidMovesLeft(piece, boardArray)) && game.getCurrentTurnColor() == "black") {
+            showWinnerDialog("white");
         }
     }
     
@@ -407,10 +413,9 @@ private void initializePieces() {
     
     
 
-    private void showWinnerDialog(Color winningColor) {
+    private void showWinnerDialog(String winningType) {
         gameOver = true; // Set game over to true to prevent further moves
-        String winner = winningColor == Color.WHITE ? "White" : "Black";
-        JOptionPane.showMessageDialog(this, winner + " wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, winningType + " wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
     
         // Reset the game after the winner is displayed
         resetGame();

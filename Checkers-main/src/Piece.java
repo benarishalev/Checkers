@@ -3,10 +3,14 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.geom.Point2D;
 
 public class Piece {
     protected Point position;
+    protected Point2D.Float drawPosition;
+    protected float speed;
     protected Color color;
+    protected String type;
     protected boolean isSelected = false;
     protected boolean isKing = false;
     protected boolean isCaptured = false; // Track if the piece is captured
@@ -14,9 +18,12 @@ public class Piece {
 
     private static final int GRID_SIZE = 75; // Size of each square on the board
 
-    public Piece(int x, int y, Color color) {
+    public Piece(int x, int y, Color color, String type) {
         this.position = new Point(x, y);
         this.color = color;
+        this.type = type;
+        this.speed = 3;
+        this.drawPosition = new Point2D.Float(x, y);
     }
 
     public Point getPosition() {
@@ -29,6 +36,10 @@ public class Piece {
 
     public Color getColor() {
         return color;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public boolean isSelected() {
@@ -65,8 +76,19 @@ public class Piece {
 
     public void draw(Graphics g, int diameter) {
         if (!isCaptured) { // Only draw if the piece is not captured
+            // move the piece to his position
+            // with smooth motion
+            this.drawPosition.x += (this.position.x - this.drawPosition.x) / this.speed;
+            this.drawPosition.y += (this.position.y - this.drawPosition.y) / this.speed;
+
+            // draw a greay outline
+            // and the piece color inside
+            g.setColor(new Color(50, 50, 50));
+            diameter += 10;
+            g.fillOval((int)drawPosition.x - diameter / 2, (int)drawPosition.y - diameter / 2, diameter, diameter);
             g.setColor(isSelected ? Color.YELLOW : color);
-            g.fillOval(position.x - diameter / 2, position.y - diameter / 2, diameter, diameter);
+            diameter -= 10;
+            g.fillOval((int)drawPosition.x - diameter / 2, (int)drawPosition.y - diameter / 2, diameter, diameter);
         }
     }
 
@@ -103,14 +125,14 @@ public class Piece {
     }
 
     protected void addDiagonalCaptureMoves(List<Point> possibleMoves, Piece[][] board, int x, int y) {
-        if (color == Color.WHITE) {
+        if (type.equals("white")) {
             // White pieces move "down" the board
             addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE, y + GRID_SIZE)); // Left diagonal down
             addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE, y + GRID_SIZE)); // Right diagonal down
             addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE*2, y + GRID_SIZE*2)); // Left diagonal down 2
             addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE*2, y + GRID_SIZE*2)); // Right diagonal down 2
 
-        } else if (color == Color.BLACK) {
+        } else if (type.equals("black")) {
             // Black pieces move "up" the board
             addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE, y - GRID_SIZE)); // Left diagonal up
             addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE, y - GRID_SIZE)); // Right diagonal up
@@ -120,11 +142,11 @@ public class Piece {
     }
 
     protected void addDiagonalMoves(List<Point> possibleMoves, Piece[][] board, int x, int y) {
-        if (color == Color.WHITE) {
+        if (type.equals("white")) {
             // White pieces move "down" the board
             addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE, y + GRID_SIZE)); // Left diagonal down
             addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE, y + GRID_SIZE)); // Right diagonal down
-        } else if (color == Color.BLACK) {
+        } else if (type.equals("black")) {
             // Black pieces move "up" the board
             addIfValidMove(possibleMoves, board, new Point(x - GRID_SIZE, y - GRID_SIZE)); // Left diagonal up
             addIfValidMove(possibleMoves, board, new Point(x + GRID_SIZE, y - GRID_SIZE)); // Right diagonal up

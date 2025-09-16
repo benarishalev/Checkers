@@ -1,24 +1,23 @@
-import java.awt.Color;
 import java.util.Random;
 
 public class Game {
-    private Color currentTurn;
+    private String currentTurn;
 
     public Game() {
         // Randomly select the starting color
-        currentTurn = new Random().nextBoolean() ? Color.WHITE : Color.BLACK;
+        currentTurn = new Random().nextBoolean() ? "white" : "black";
     }
 
-    public Color getCurrentTurnColor() {
+    public String getCurrentTurnColor() {
         return currentTurn;
     }
 
     public void switchTurn() {
-        currentTurn = (currentTurn == Color.WHITE) ? Color.BLACK : Color.WHITE;
+        currentTurn = (currentTurn == "white") ? "black" : "white";
     }
 
     public void resetGame() {
         // Reset the game to the initial state
-        currentTurn = new Random().nextBoolean() ? Color.WHITE : Color.BLACK;
+        currentTurn = new Random().nextBoolean() ? "white" : "black";
     }
 }

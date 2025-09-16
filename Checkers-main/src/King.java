@@ -4,8 +4,8 @@ import java.awt.Point;
 
 public class King extends Piece {
 
-    public King(int x, int y, Color color) {
-        super(x, y, color);
+    public King(int x, int y, Color color, String type) {
+        super(x, y, color, type);
         makeKing();  // Automatically make this piece a King
     }
 
