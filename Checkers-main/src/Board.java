@@ -33,7 +33,7 @@ public class Board extends JPanel {
         game = new Game(); // Initialize the Game object
 
 
-        timer = new Timer(16, e -> repaint());
+        timer = new Timer(8, e -> repaint());
         timer.start();
 
 
@@ -121,33 +121,33 @@ private void initializePieces() {
     // Initialize white pieces
     whitePieces = new Piece[]{
             new WhitePiece(1 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
-            // new WhitePiece(3 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
-            // new WhitePiece(5 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
-            // new WhitePiece(7 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
-            // new WhitePiece(0 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
-            // new WhitePiece(2 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
-            // new WhitePiece(4 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
-            // new WhitePiece(6 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
+            new WhitePiece(3 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
+            new WhitePiece(5 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
+            new WhitePiece(7 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
+            new WhitePiece(0 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
+            new WhitePiece(2 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
+            new WhitePiece(4 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
+            new WhitePiece(6 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
             new WhitePiece(1 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
-            // new WhitePiece(3 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
-            // new WhitePiece(5 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
-            // new WhitePiece(7 * GRID_SIZE + offset, 2 * GRID_SIZE + offset)
+            new WhitePiece(3 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
+            new WhitePiece(5 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
+            new WhitePiece(7 * GRID_SIZE + offset, 2 * GRID_SIZE + offset)
     };
 
     // Initialize black pieces
     blackPieces = new Piece[] {
             new BlackPiece(0 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
-            // new BlackPiece(2 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
-            // new BlackPiece(4 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
-            // new BlackPiece(6 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
-            // new BlackPiece(1 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
-            // new BlackPiece(3 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
-            // new BlackPiece(5 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
-            // new BlackPiece(7 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
-            // new BlackPiece(0 * GRID_SIZE + offset, 7 * GRID_SIZE + offset),
-            // new BlackPiece(2 * GRID_SIZE + offset, 7 * GRID_SIZE + offset),
-            // new BlackPiece(4 * GRID_SIZE + offset, 7 * GRID_SIZE + offset),
-            // new BlackPiece(6 * GRID_SIZE + offset, 7 * GRID_SIZE + offset)
+            new BlackPiece(2 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
+            new BlackPiece(4 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
+            new BlackPiece(6 * GRID_SIZE + offset, 5 * GRID_SIZE + offset),
+            new BlackPiece(1 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
+            new BlackPiece(3 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
+            new BlackPiece(5 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
+            new BlackPiece(7 * GRID_SIZE + offset, 6 * GRID_SIZE + offset),
+            new BlackPiece(0 * GRID_SIZE + offset, 7 * GRID_SIZE + offset),
+            new BlackPiece(2 * GRID_SIZE + offset, 7 * GRID_SIZE + offset),
+            new BlackPiece(4 * GRID_SIZE + offset, 7 * GRID_SIZE + offset),
+            new BlackPiece(6 * GRID_SIZE + offset, 7 * GRID_SIZE + offset)
     };
 }
 
