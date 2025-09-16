@@ -114,7 +114,7 @@ private void initializePieces() {
 
     // Initialize white pieces
     whitePieces = new Piece[]{
-            // new WhitePiece(1 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
+            new WhitePiece(1 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
             // new WhitePiece(3 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
             // new WhitePiece(5 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
             // new WhitePiece(7 * GRID_SIZE + offset, 0 * GRID_SIZE + offset),
@@ -123,7 +123,7 @@ private void initializePieces() {
             // new WhitePiece(4 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
             // new WhitePiece(6 * GRID_SIZE + offset, 1 * GRID_SIZE + offset),
             new WhitePiece(1 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
-            new WhitePiece(3 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
+            // new WhitePiece(3 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
             // new WhitePiece(5 * GRID_SIZE + offset, 2 * GRID_SIZE + offset),
             // new WhitePiece(7 * GRID_SIZE + offset, 2 * GRID_SIZE + offset)
     };
@@ -208,18 +208,11 @@ private void initializePieces() {
             if (possibleMoves.contains(newPosition) && canCapture(selectedPiece, boardArray, newPosition)) {
                 handleCapture(selectedPiece, newPosition, boardArray);
     
-                // Check for additional capture opportunities from the new position
-                possibleMoves = getCaptureMoves(selectedPiece, boardArray);
-                if (!possibleMoves.isEmpty()) {
-                    // Show dialog only once
-                    JOptionPane.showMessageDialog(Board.this, "You can perform another capture!", "Capture Opportunity", JOptionPane.INFORMATION_MESSAGE);
-                    
-                    // Let the player perform another capture; don't switch turn yet
-                    return;
-                }
-    
                 checkForWinner();
                 if (!gameOver) {
+                    deselectAllPieces();
+                    selectedPiece = null;
+                    possibleMoves.clear();
                     game.switchTurn();
                 }
             } else if (selectedPiece.isDestinationEmpty(boardArray, newPosition)) {
@@ -288,16 +281,13 @@ private void initializePieces() {
     
             // Check for further capture opportunities from the new position for both black and white pieces
             possibleMoves = getCaptureMoves(movedPiece, createBoardArray());
-    
             if (!possibleMoves.isEmpty()) {
                 // Double capture is possible, let the player capture again
                 JOptionPane.showMessageDialog(Board.this, "You can perform another capture!", "Capture Opportunity", JOptionPane.INFORMATION_MESSAGE);
-                return; // Allow the player to continue their turn
+                deselectAllPieces();
+                game.switchTurn(); // switch turns back if there is another capture moves aviable
             }
-    
-            // Deselect all pieces and switch the turn if no more captures are possible
-            deselectAllPieces();
-            // game.switchTurn();
+            
         }
     }
     
