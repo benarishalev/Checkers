@@ -97,10 +97,12 @@ public class Board extends JPanel {
     }
 
     private void drawBoard(Graphics g) {
+        int x = Globals.WIDTH / 2 - BOARD_SIZE/2;
+        int y = Globals.HEIGHT / 2 - BOARD_SIZE/2;
         for (int i = 0; i < BOARD_SIZE / GRID_SIZE; i++) {
             for (int m = 0; m < BOARD_SIZE / GRID_SIZE; m++) {
                 g.setColor((i + m) % 2 != 0 ? Color.BLACK : Color.WHITE);
-                g.fillRect(i * GRID_SIZE, m * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                g.fillRect(x + i * GRID_SIZE, y + m * GRID_SIZE, GRID_SIZE, GRID_SIZE);
             }
         }
     }
