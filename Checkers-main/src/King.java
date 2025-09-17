@@ -10,8 +10,8 @@ public class King extends Piece {
     }
 
     @Override
-    public void draw(Graphics g, int diameter) {
-        super.draw(g, diameter);
+    public void draw(Graphics g, int diameter, int x, int y) {
+        super.draw(g, diameter, x, y);
         // Additional drawing logic for the King (e.g., drawing a crown)
         g.setColor(Color.RED);  // Example to differentiate the King
         Point position = getPosition();  // Use the getter method

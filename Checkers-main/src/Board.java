@@ -2,14 +2,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.event.*;
 
 public class Board extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -32,17 +31,30 @@ public class Board extends JPanel {
         initializePieces();
         game = new Game(); // Initialize the Game object
 
-
-        timer = new Timer(8, e -> repaint());
+        timer = new Timer(4, e -> repaint());
         timer.start();
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Globals.WIDTH = getWidth();
+                Globals.HEIGHT = getHeight();
+                repaint();
+            }
+        });
 
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                Point mousePoint = e.getPoint();
+                int xWinSize = (int)(Globals.WIDTH / 2.0f - BOARD_SIZE/2.0f);
+                int yWinSize = (int)(Globals.HEIGHT / 2.0f - BOARD_SIZE/2.0f);
+                mousePoint.x -= xWinSize;
+                mousePoint.y -= yWinSize;
                 if (selectedPiece == null) {
                     deselectAllPieces();
-                    Piece clickedPiece = getPieceAt(e.getPoint());
+                    Piece clickedPiece = getPieceAt(mousePoint);
                     if (clickedPiece != null) {
                         System.out.println("Piece selected: " + clickedPiece.getClass().getSimpleName());
 
@@ -65,8 +77,8 @@ public class Board extends JPanel {
                     }
                 } else {
                     // Use isClickOnPossibleMove to check if the move is valid
-                    if (isClickOnPossibleMove(e.getPoint())) {
-                        movePiece(e.getPoint());
+                    if (isClickOnPossibleMove(mousePoint)) {
+                        movePiece(mousePoint);
                     } else {
                         deselectAllPieces();
                         selectedPiece = null;
@@ -82,6 +94,7 @@ public class Board extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        drawBackground(g, 2, 25);
         drawBoard(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -91,14 +104,18 @@ public class Board extends JPanel {
 
         // Draw possible move highlights
         g.setColor(Color.RED);
+        int xWinSize = (int)(Globals.WIDTH / 2.0f - BOARD_SIZE/2.0f);
+        int yWinSize = (int)(Globals.HEIGHT / 2.0f - BOARD_SIZE/2.0f);
         for (Point move : possibleMoves) {
-            g.fillOval(move.x - DIAMETER / 2, move.y - DIAMETER / 2, DIAMETER, DIAMETER);
+            g.fillOval((xWinSize + move.x) - DIAMETER / 2, (yWinSize + move.y) - DIAMETER / 2, DIAMETER, DIAMETER);
         }
     }
 
     private void drawBoard(Graphics g) {
-        int x = Globals.WIDTH / 2 - BOARD_SIZE/2;
-        int y = Globals.HEIGHT / 2 - BOARD_SIZE/2;
+        int x = (int)(Globals.WIDTH / 2.0f - BOARD_SIZE/2.0f);
+        int y = (int)(Globals.HEIGHT / 2.0f - BOARD_SIZE/2.0f);
+        g.setColor(new Color(20, 20, 20));
+        g.fillRect(x - 10, y - 10, BOARD_SIZE + 20, BOARD_SIZE + 20);
         for (int i = 0; i < BOARD_SIZE / GRID_SIZE; i++) {
             for (int m = 0; m < BOARD_SIZE / GRID_SIZE; m++) {
                 g.setColor((i + m) % 2 != 0 ? Color.BLACK : Color.WHITE);
@@ -107,10 +124,23 @@ public class Board extends JPanel {
         }
     }
 
+    private void drawBackground(Graphics g, int size, int amount) {
+        g.setColor(Color.black);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        for (int y = 0; y < getHeight(); y += amount) {
+            for (int x = 0; x < getWidth(); x += amount) {
+                g.setColor(Color.WHITE);
+                g.fillOval(x*size, y*size, size, size);
+            }
+        }
+    };
+
     private void drawPieces(Graphics2D g2d, Piece[] pieces) {
+        int x = (int)(Globals.WIDTH / 2.0f - BOARD_SIZE/2.0f);
+        int y = (int)(Globals.HEIGHT / 2.0f - BOARD_SIZE/2.0f);
         for (Piece piece : pieces) {
             if (piece != null && !piece.isCaptured()) {
-                piece.draw(g2d, DIAMETER);
+                piece.draw(g2d, DIAMETER, x, y);
             }
         }
     }
@@ -224,8 +254,8 @@ private void initializePieces() {
                     game.switchTurn();
                 }
             } else if (selectedPiece.isDestinationEmpty(boardArray, newPosition)) {
-                selectedPiece.setPosition(newPosition);
                 promotePieceIfNecessary(selectedPiece, gridY);
+                selectedPiece.setPosition(newPosition);
                 selectedPiece = null;
                 deselectAllPieces();
                 possibleMoves.clear();
@@ -233,6 +263,7 @@ private void initializePieces() {
                 if (!gameOver) {
                     game.switchTurn();
                 }
+                System.out.println((newPosition.x / GRID_SIZE) + " " + (newPosition.y / GRID_SIZE));
             } else {
                 throw new IllegalStateException("Invalid move: Destination is not empty or capture not possible!");
             }
@@ -321,7 +352,7 @@ private void initializePieces() {
 
     private List<Point> getCaptureMoves(Piece piece, Piece[][] boardArray) {
         List<Point> captureMoves = new ArrayList<>();
-        List<Point> possibleMoves = piece.getCapturePossibleMoves(boardArray);
+        List<Point> possibleMoves = piece.getCapturePossibleMoves(boardArray, BOARD_SIZE);
 
         // Checks what possible move is a capture move
         for (Point move : possibleMoves) {
@@ -344,7 +375,7 @@ private void initializePieces() {
     
         // If no capture moves are available, get the regular possible moves
         if (possibleMoves.isEmpty()) {
-            possibleMoves = filterOutOfBoundsMoves(piece.getPossibleMoves(boardArray));
+            possibleMoves = filterOutOfBoundsMoves(piece.getPossibleMoves(boardArray, BOARD_SIZE));
         }
     
         // Mark the piece as selected

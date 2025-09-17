@@ -74,7 +74,7 @@ public class Piece {
         this.opponentPiecePosition = opponentPiecePosition;
     }
 
-    public void draw(Graphics g, int diameter) {
+    public void draw(Graphics g, int diameter, int x, int y) {
         if (!isCaptured) { // Only draw if the piece is not captured
             // move the piece to his position
             // with smooth motion
@@ -85,10 +85,10 @@ public class Piece {
             // and the piece color inside
             g.setColor(new Color(50, 50, 50));
             diameter += 10;
-            g.fillOval((int)drawPosition.x - diameter / 2, (int)drawPosition.y - diameter / 2, diameter, diameter);
+            g.fillOval(x + (int)drawPosition.x - diameter / 2, y + (int)drawPosition.y - diameter / 2, diameter, diameter);
             g.setColor(isSelected ? Color.YELLOW : color);
             diameter -= 10;
-            g.fillOval((int)drawPosition.x - diameter / 2, (int)drawPosition.y - diameter / 2, diameter, diameter);
+            g.fillOval(x + (int)drawPosition.x - diameter / 2, y + (int)drawPosition.y - diameter / 2, diameter, diameter);
         }
     }
 
@@ -96,7 +96,7 @@ public class Piece {
         return point.distance(position) <= diameter / 2;
     }
 
-    public List<Point> getCapturePossibleMoves(Piece[][] board) {
+    public List<Point> getCapturePossibleMoves(Piece[][] board, int BOARD_SIZE) {
         List<Point> captureMoves = new ArrayList<>();
         int x = position.x;
         int y = position.y;
@@ -110,7 +110,7 @@ public class Piece {
         return captureMoves;
     }
 
-    public List<Point> getPossibleMoves(Piece[][] board) {
+    public List<Point> getPossibleMoves(Piece[][] board, int BOARD_SIZE) {
         List<Point> possibleMoves = new ArrayList<>();
         int x = position.x;
         int y = position.y;
